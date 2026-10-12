@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Robótica e Inteligência Artificial na Colômbia 🇨🇴🤖</title>
+<meta name="description" content="Site educativo e interativo sobre robótica e inteligência artificial na Colômbia, com exemplos reais, fontes, um jogo de programação de robô e um quiz.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   1. TOKENS DE COR (tema claro, escuro automático e manual)
+   Amarelo, azul e vermelho vêm da bandeira da Colômbia.
+   ========================================================= */
+:root {
+  --yellow: #FCD116;
+  --blue: #003893;
+  --red: #CE1126;
+  --bg: #f3f6ff;
+  --bg2: #e4ebff;
+  --card: #ffffff;
+  --text: #0d1b3d;
+  --muted: #475678;
+  --line: rgba(0, 56, 147, .18);
+  --link: #1746c4;
+  --glow: rgba(0, 56, 147, .18);
+  --board: #0b1a44;
+  --cell-a: #132a6b;
+  --cell-b: #0f2260;
+  --head-font: 'Chakra Petch', 'Trebuchet MS', 'Segoe UI', system-ui, sans-serif;
+  --body-font: 'Nunito', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #070e27; --bg2: #0b1537; --card: #111c45; --text: #eef2ff; --muted: #b0bce0;
+    --line: rgba(140, 170, 255, .22); --link: #93b8ff; --glow: rgba(90, 130, 255, .28);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #070e27; --bg2: #0b1537; --card: #111c45; --text: #eef2ff; --muted: #b0bce0;
+  --line: rgba(140, 170, 255, .22); --link: #93b8ff; --glow: rgba(90, 130, 255, .28);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+/* Garante que elementos com o atributo hidden somem de verdade, mesmo os que têm display próprio (ex.: botões) */
+[hidden] { display: none !important; }
+html { scroll-behavior: smooth; scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 80px); }
+body {
+  margin: 0;
+  font-family: var(--body-font);
+  font-size: 1.05rem;
+  line-height: 1.55;
+  color: var(--text);
+  background-color: var(--bg);
+  -webkit-tap-highlight-color: transparent;
+}
+h1, h2, h3 { font-family: var(--head-font); line-height: 1.12; margin: 0; letter-spacing: .005em; }
+h2 { font-size: clamp(1.7rem, 5.4vw, 2.5rem); }
+h3 { font-size: 1.2rem; }
+p { margin: 0 0 .8em; }
+a { color: var(--link); }
+:focus-visible { outline: 3px solid var(--yellow); outline-offset: 3px; border-radius: 6px; }
+.wrap { width: 100%; max-width: 1040px; margin: 0 auto; padding: 0 16px; }
+.sec { padding: clamp(46px, 8vw, 84px) 0; scroll-margin-top: 80px; }
+.sec.alt { background: var(--bg2); }
+.lead { max-width: 62ch; color: var(--muted); font-size: 1.1rem; margin-top: 12px; }
+.tricolor { display: block; width: 96px; height: 7px; border-radius: 7px; margin: 12px 0 0;
+  background: linear-gradient(90deg, var(--yellow) 0 50%, var(--blue) 50% 75%, var(--red) 75% 100%); }
+
+/* ---------- Botões ---------- */
+.btn {
+  font: inherit; font-weight: 700; font-size: 1rem;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 48px; padding: 12px 20px; border: 0; border-radius: 14px;
+  cursor: pointer; text-decoration: none; color: #fff;
+  box-shadow: 0 5px 0 rgba(0, 0, 0, .25);
+  transition: transform .12s ease, filter .12s ease;
+}
+.btn:hover { filter: brightness(1.08); }
+.btn:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(0, 0, 0, .25); }
+.btn:disabled { opacity: .45; cursor: not-allowed; filter: none; }
+.btn.yellow { background: var(--yellow); color: #14224a; }
+.btn.blue { background: var(--blue); }
+.btn.red { background: var(--red); }
+.btn.ghost { background: transparent; color: var(--text); border: 2px solid var(--line); box-shadow: none; }
+
+/* ---------- Barra de navegação ---------- */
+.topbar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.topbar .wrap { display: flex; align-items: center; gap: 12px; padding-top: 8px; padding-bottom: 8px; }
+.brand { font-family: var(--head-font); font-weight: 700; font-size: 1.05rem; white-space: nowrap; color: var(--text); text-decoration: none; }
+.nav { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; flex: 1; -webkit-overflow-scrolling: touch; }
+.nav::-webkit-scrollbar { display: none; }
+.nav a {
+  white-space: nowrap; text-decoration: none; color: var(--muted); font-weight: 700; font-size: .95rem;
+  padding: 8px 12px; border-radius: 999px; border: 2px solid transparent;
+}
+.nav a:hover { color: var(--text); }
+.nav a.on { color: var(--text); background: var(--card); border-color: var(--yellow); }
+
+/* ---------- Hero ---------- */
+.hero { position: relative; overflow: hidden; padding: clamp(36px, 7vw, 76px) 0 clamp(40px, 7vw, 80px); }
+.hero::before {
+  content: ''; position: absolute; inset: 0; opacity: .9; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cg fill='none' stroke='%235b86ff' stroke-opacity='.3' stroke-width='1.5'%3E%3Cpath d='M0 30h40l10 10h30M60 0v34l12 12h48M0 90h24l12-12h36l10 10v32'/%3E%3C/g%3E%3Cg fill='%235b86ff' fill-opacity='.45'%3E%3Ccircle cx='40' cy='30' r='3'/%3E%3Ccircle cx='80' cy='40' r='3'/%3E%3Ccircle cx='36' cy='78' r='3'/%3E%3Ccircle cx='72' cy='46' r='3'/%3E%3C/g%3E%3C/svg%3E");
+  -webkit-mask-image: linear-gradient(to bottom, #000 30%, transparent 95%);
+  mask-image: linear-gradient(to bottom, #000 30%, transparent 95%);
+}
+.hero .wrap { position: relative; display: grid; gap: 28px; align-items: center; }
+.hero h1 { font-size: clamp(2.2rem, 8.4vw, 4rem); font-weight: 700; }
+.hero p.intro { font-size: 1.15rem; color: var(--muted); max-width: 54ch; margin-top: 16px; }
+.hero .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 22px; }
+.robot-box { display: grid; place-items: center; }
+.robot-box svg { width: min(78vw, 340px); height: auto; filter: drop-shadow(0 18px 24px var(--glow)); animation: floaty 4.5s ease-in-out infinite; }
+@keyframes floaty { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+.eye { transform-box: fill-box; transform-origin: center; animation: blink 5s infinite; }
+@keyframes blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.1); } }
+.pulse { animation: pulse 1.6s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: .55; } }
+@media (min-width: 820px) { .hero .wrap { grid-template-columns: 1.15fr .85fr; } }
+
+/* ---------- Cartões e blocos ---------- */
+.senseflow { display: flex; flex-wrap: wrap; gap: 10px; margin: 22px 0 6px; }
+.senseflow div {
+  flex: 1 1 150px; background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 12px 14px;
+  border-top: 5px solid var(--yellow);
+}
+.senseflow div:nth-child(2) { border-top-color: var(--blue); }
+.senseflow div:nth-child(3) { border-top-color: var(--red); }
+.senseflow strong { font-family: var(--head-font); display: block; }
+.senseflow span { font-size: .95rem; color: var(--muted); }
+
+details.card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 18px; margin-top: 14px; overflow: hidden;
+}
+details.card summary {
+  list-style: none; cursor: pointer; display: flex; align-items: center; gap: 12px;
+  padding: 16px 18px; font-family: var(--head-font); font-size: 1.15rem; font-weight: 600; min-height: 56px;
+}
+details.card summary::-webkit-details-marker { display: none; }
+details.card summary .ico { font-size: 1.6rem; }
+details.card summary::after { content: '＋'; margin-left: auto; font-size: 1.4rem; color: var(--link); transition: transform .2s; }
+details.card[open] summary::after { content: '－'; }
+details.card[open] { border-color: var(--yellow); box-shadow: 0 8px 24px var(--glow); }
+.card-body { padding: 0 18px 18px; }
+.card-body ul { margin: 0; padding-left: 1.1em; }
+.card-body li { margin-bottom: .75em; }
+.src { display: inline-block; font-size: .88rem; font-weight: 700; margin-top: 2px; }
+.note {
+  background: color-mix(in srgb, var(--yellow) 22%, transparent); border-left: 5px solid var(--yellow);
+  padding: 10px 14px; border-radius: 0 12px 12px 0; margin-top: 12px; font-size: .96rem;
+}
+
+/* ---------- IA: passos e abas ---------- */
+.steps { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+.step {
+  font: inherit; font-weight: 700; cursor: pointer; color: var(--text);
+  background: var(--card); border: 2px solid var(--line); border-radius: 14px; padding: 10px 16px; min-height: 46px;
+}
+.step[aria-pressed="true"] { border-color: var(--blue); background: var(--blue); color: #fff; }
+.stepText { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; margin-top: 10px; }
+.ctx { display: grid; gap: 12px; margin-top: 26px; }
+.ctx > div { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; }
+@media (min-width: 760px) { .ctx { grid-template-columns: 1fr 1fr; } }
+
+.tabs { display: flex; gap: 8px; overflow-x: auto; margin-top: 30px; padding-bottom: 6px; scrollbar-width: thin; }
+.tab {
+  font: inherit; font-weight: 700; cursor: pointer; white-space: nowrap; color: var(--text);
+  background: var(--card); border: 2px solid var(--line); border-radius: 999px; padding: 10px 18px; min-height: 46px;
+}
+.tab[aria-selected="true"] { background: var(--yellow); color: #14224a; border-color: var(--yellow); }
+.tabpanel { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 18px; margin-top: 10px; }
+.tabpanel[hidden] { display: none; }
+.tabpanel h3 { margin-bottom: 8px; }
+.tabpanel .ex { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line); }
+
+/* ---------- Jogo do robô (controle ao vivo) ---------- */
+.game { display: grid; gap: 18px; margin-top: 22px; justify-items: center; }
+@media (min-width: 760px) { .game { grid-template-columns: auto 1fr; justify-items: stretch; align-items: start; gap: 28px; } }
+.gleft { width: min(92vw, var(--bw, 320px)); }
+.levels { display: flex; gap: 8px; margin-bottom: 12px; }
+.lvl {
+  font: inherit; font-weight: 700; cursor: pointer; color: var(--text); background: var(--card);
+  border: 2px solid var(--line); border-radius: 12px; padding: 6px 14px; min-height: 42px; flex: 1;
+}
+.lvl[aria-pressed="true"] { background: var(--blue); border-color: var(--blue); color: #fff; }
+.board {
+  padding: 8px; border-radius: 20px; background: linear-gradient(145deg, #112a70, #0a1740);
+  border: 3px solid var(--blue); box-shadow: 0 0 0 3px var(--yellow), 0 12px 24px var(--glow);
+}
+.grid {
+  --n: 5; position: relative; display: grid; grid-template-columns: repeat(var(--n), 1fr);
+  aspect-ratio: 1 / 1; width: 100%; border-radius: 12px; overflow: hidden; background: #0a1740;
+}
+.cell { position: relative; display: grid; place-items: center; background: var(--cell-a); border: 1px solid rgba(120, 160, 255, .12); font-size: clamp(.9rem, 4.2vw, 1.3rem); }
+.cell.alt { background: var(--cell-b); }
+.cell.wall { background: repeating-linear-gradient(45deg, #d71f35 0 7px, #b50f23 7px 14px); }
+.cell.wall::after { content: '✖'; color: rgba(255, 255, 255, .8); }
+.cell.goal { background: linear-gradient(145deg, #ffe45c, var(--yellow)); animation: glow 1.8s ease-in-out infinite; }
+.cell.goal::after { content: '🏁'; }
+.cell.start::after { content: ''; width: 30%; height: 30%; border-radius: 50%; border: 2px dashed rgba(147, 184, 255, .55); }
+@keyframes glow { 50% { box-shadow: inset 0 0 14px rgba(255, 255, 255, .8); } }
+.robot { position: absolute; z-index: 3; pointer-events: none; padding: 3%; transition: left .26s ease, top .26s ease; }
+.robot svg { width: 100%; height: 100%; display: block; transition: transform .26s ease; filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .55)); }
+.robot.bump { animation: bump .35s ease; }
+@keyframes bump { 0%, 100% { translate: 0 0; } 25% { translate: -4px 0; } 75% { translate: 4px 0; } }
+.msg { margin-top: 12px; padding: 10px 12px; border-radius: 14px; min-height: 48px; font-weight: 600; font-size: .98rem; background: var(--card); border: 2px solid var(--line); }
+.msg.ok { background: color-mix(in srgb, #1c9a5a 22%, transparent); border-color: #1c9a5a; animation: tada .6s ease; }
+.msg.err { background: color-mix(in srgb, var(--red) 18%, transparent); border-color: var(--red); }
+.msg.tip { background: color-mix(in srgb, var(--yellow) 28%, transparent); border-color: var(--yellow); }
+@keyframes tada { 0% { transform: scale(.94); } 45% { transform: scale(1.04); } 100% { transform: scale(1); } }
+.dpad { display: grid; grid-template-columns: 1fr 1.25fr 1fr; gap: 8px; margin-top: 12px; }
+.dpad .btn { flex-direction: column; gap: 0; min-height: 68px; padding: 8px 4px; font-size: .88rem; line-height: 1.1; }
+.dpad .btn b { font-size: 1.7rem; line-height: 1.1; }
+.panel { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 16px; width: min(92vw, var(--bw, 320px)); }
+@media (min-width: 760px) { .panel { width: auto; } }
+.panel h3 { margin-bottom: 6px; }
+.count { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px; font-weight: 700; }
+.hist { display: flex; flex-wrap: wrap; gap: 4px; min-height: 40px; margin: 10px 0; padding: 8px; background: var(--bg2); border-radius: 12px; border: 2px dashed var(--line); }
+.hist:empty::before { content: 'Seus movimentos aparecem aqui.'; color: var(--muted); font-size: .9rem; }
+.chip { font-weight: 700; font-size: .85rem; border-radius: 8px; padding: 3px 8px; color: #fff; }
+.chip.F { background: var(--blue); } .chip.L { background: #1c7a4a; } .chip.R { background: #9a5b00; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.actions .btn { flex: 1 1 90px; min-height: 44px; padding: 8px 10px; font-size: .95rem; }
+.best { color: var(--muted); font-size: .9rem; margin-top: 10px; }
+
+/* ---------- Quiz ---------- */
+.quiz { max-width: 720px; margin-top: 24px; background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: clamp(16px, 4vw, 26px); box-shadow: 0 10px 28px var(--glow); }
+.qtop { display: flex; justify-content: space-between; font-weight: 700; color: var(--muted); font-size: .95rem; }
+.bar { height: 10px; border-radius: 10px; background: var(--bg2); margin: 8px 0 18px; overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--yellow), var(--blue), var(--red)); transition: width .4s ease; }
+.quiz h3 { font-size: clamp(1.15rem, 4vw, 1.4rem); margin-bottom: 14px; }
+.opts { display: grid; gap: 10px; }
+.opt {
+  font: inherit; font-weight: 600; text-align: left; cursor: pointer; color: var(--text);
+  display: flex; gap: 12px; align-items: center;
+  background: var(--bg2); border: 2px solid var(--line); border-radius: 14px; padding: 12px 14px; min-height: 54px;
+}
+.opt:hover:not(:disabled) { border-color: var(--blue); }
+.opt .L { flex: 0 0 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--blue); color: #fff; font-family: var(--head-font); }
+.opt.right { border-color: #1c9a5a; background: color-mix(in srgb, #1c9a5a 24%, transparent); }
+.opt.wrong { border-color: var(--red); background: color-mix(in srgb, var(--red) 20%, transparent); }
+.opt:disabled { cursor: default; }
+.explain { margin-top: 14px; padding: 12px 14px; border-radius: 14px; background: var(--bg2); border-left: 5px solid var(--yellow); }
+.result { text-align: center; padding: 10px 0; }
+.result .big { font-family: var(--head-font); font-size: clamp(2.4rem, 10vw, 3.6rem); }
+.qactions { margin-top: 16px; display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* ---------- Curiosidades ---------- */
+.filters { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+.fchip {
+  font: inherit; font-weight: 700; cursor: pointer; color: var(--text); background: var(--card);
+  border: 2px solid var(--line); border-radius: 999px; padding: 8px 16px; min-height: 42px;
+}
+.fchip[aria-pressed="true"] { background: var(--red); border-color: var(--red); color: #fff; }
+.cur { display: grid; gap: 14px; margin-top: 16px; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); }
+.fact { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 16px; border-top: 6px solid var(--yellow); }
+.fact:nth-child(3n+2) { border-top-color: var(--blue); }
+.fact:nth-child(3n) { border-top-color: var(--red); }
+.fact[hidden] { display: none; }
+.tag { display: inline-block; font-size: .8rem; font-weight: 700; color: var(--muted); background: var(--bg2); border-radius: 999px; padding: 2px 10px; margin-bottom: 8px; }
+.fact h3 { margin-bottom: 6px; font-size: 1.1rem; }
+
+/* ---------- Fontes e rodapé ---------- */
+.sources { columns: 1; margin-top: 20px; padding-left: 1.2em; }
+@media (min-width: 820px) { .sources { columns: 2; column-gap: 32px; } }
+.sources li { break-inside: avoid; margin-bottom: .6em; font-size: .96rem; word-break: break-word; }
+footer { padding: 30px 0 46px; border-top: 6px solid var(--blue); color: var(--muted); font-size: .94rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===================== NAVEGAÇÃO ===================== -->
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="#inicio">🤖 Colômbia Tech</a>
+    <nav class="nav" aria-label="Seções do site">
+      <a href="#robotica">Robótica</a>
+      <a href="#ia">IA</a>
+      <a href="#jogo">Jogo</a>
+      <a href="#quiz">Quiz</a>
+      <a href="#curiosidades">Curiosidades</a>
+      <a href="#fontes">Fontes</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<!-- ===================== INÍCIO ===================== -->
+<section class="hero" id="inicio">
+  <div class="wrap">
+    <div>
+      <h1>O Futuro Tecnológico da Colômbia 🇨🇴</h1>
+      <span class="tricolor"></span>
+      <p class="intro">Robôs e inteligência artificial já aparecem em universidades, escolas, hospitais, lavouras e cidades colombianas. Aqui você entende como funcionam, vê exemplos reais com fontes e testa o que aprendeu em um jogo e em um quiz.</p>
+      <div class="cta">
+        <a class="btn yellow" href="#robotica">Explorar tecnologia</a>
+        <a class="btn ghost" href="#jogo">Ir direto ao jogo</a>
+      </div>
+    </div>
+
+    <!-- Ilustração: robô com as cores da bandeira (amarelo, azul, vermelho) -->
+    <div class="robot-box" aria-hidden="true">
+      <svg viewBox="0 0 300 340" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <clipPath id="bodyClip"><rect x="80" y="156" width="140" height="120" rx="26"/></clipPath>
+        </defs>
+        <!-- antena -->
+        <line x1="150" y1="22" x2="150" y2="56" stroke="#8fa6ff" stroke-width="5" stroke-linecap="round"/>
+        <circle class="pulse" cx="150" cy="18" r="9" fill="#CE1126"/>
+        <!-- cabeça -->
+        <rect x="92" y="54" width="116" height="96" rx="26" fill="#FCD116" stroke="#0d1b3d" stroke-width="4"/>
+        <rect x="106" y="70" width="88" height="48" rx="16" fill="#0b1a44"/>
+        <circle class="eye" cx="130" cy="94" r="10" fill="#7fb4ff"/>
+        <circle class="eye" cx="170" cy="94" r="10" fill="#7fb4ff"/>
+        <rect x="132" y="130" width="36" height="7" rx="3.5" fill="#0d1b3d"/>
+        <!-- orelhas / sensores -->
+        <rect x="80" y="86" width="12" height="28" rx="6" fill="#003893"/>
+        <rect x="208" y="86" width="12" height="28" rx="6" fill="#CE1126"/>
+        <!-- pescoço -->
+        <rect x="136" y="148" width="28" height="14" fill="#0d1b3d"/>
+        <!-- corpo com as faixas da bandeira -->
+        <g clip-path="url(#bodyClip)">
+          <rect x="80" y="156" width="140" height="60" fill="#FCD116"/>
+          <rect x="80" y="216" width="140" height="30" fill="#003893"/>
+          <rect x="80" y="246" width="140" height="30" fill="#CE1126"/>
+        </g>
+        <rect x="80" y="156" width="140" height="120" rx="26" fill="none" stroke="#0d1b3d" stroke-width="4"/>
+        <!-- circuito no peito -->
+        <path d="M104 186h26l10 10h24l10-10h14" fill="none" stroke="#0d1b3d" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="104" cy="186" r="5" fill="#0d1b3d"/><circle cx="196" cy="186" r="5" fill="#0d1b3d"/>
+        <circle class="pulse" cx="150" cy="200" r="7" fill="#CE1126"/>
+        <!-- braços -->
+        <rect x="46" y="166" width="26" height="86" rx="13" fill="#003893" stroke="#0d1b3d" stroke-width="4"/>
+        <rect x="228" y="166" width="26" height="86" rx="13" fill="#CE1126" stroke="#0d1b3d" stroke-width="4"/>
+        <circle cx="59" cy="260" r="14" fill="#FCD116" stroke="#0d1b3d" stroke-width="4"/>
+        <circle cx="241" cy="260" r="14" fill="#FCD116" stroke="#0d1b3d" stroke-width="4"/>
+        <!-- pernas -->
+        <rect x="104" y="276" width="32" height="40" rx="10" fill="#003893" stroke="#0d1b3d" stroke-width="4"/>
+        <rect x="164" y="276" width="32" height="40" rx="10" fill="#CE1126" stroke="#0d1b3d" stroke-width="4"/>
+        <rect x="96" y="314" width="48" height="16" rx="8" fill="#FCD116" stroke="#0d1b3d" stroke-width="4"/>
+        <rect x="156" y="314" width="48" height="16" rx="8" fill="#FCD116" stroke="#0d1b3d" stroke-width="4"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ROBÓTICA ===================== -->
+<section class="sec alt" id="robotica">
+  <div class="wrap">
+    <h2>Robótica na Colômbia 🦾</h2>
+    <span class="tricolor"></span>
+    <p class="lead">Robótica é a área que junta mecânica, eletrônica e programação para criar máquinas que fazem tarefas por conta própria ou com ajuda de pessoas.</p>
+
+    <div class="senseflow">
+      <div><strong>1. Sentir</strong><span>Sensores e câmeras percebem o ambiente.</span></div>
+      <div><strong>2. Decidir</strong><span>Um programa escolhe o que fazer.</span></div>
+      <div><strong>3. Agir</strong><span>Motores e braços executam o movimento.</span></div>
+    </div>
+
+    <p style="margin-top:18px;color:var(--muted)">Toque em cada tema para ver exemplos reais.</p>
+
+    <details class="card" open>
+      <summary><span class="ico">🎓</span> Universidades e pesquisa</summary>
+      <div class="card-body"><ul>
+        <li><b>Aura, robô humanoide.</b> Em 2025, a Universidad de los Andes (Bogotá) passou a ter o Aura, que mede 130 cm e pesa 35 kg. A reportagem o descreve como o primeiro humanoide implantado em um ambiente universitário na América Latina.<br>
+          <a class="src" target="_blank" rel="noopener" href="https://www.elespectador.com/ciencia/aura-el-primer-robot-humanoide-en-una-universidad-de-colombia/">Fonte: El Espectador (jun. 2025) ↗</a></li>
+        <li><b>RoboCup 2022.</b> Uma equipe da Universidad de los Andes representou a Colômbia em Bangkok e ficou em segundo lugar na competição, que reuniu mais de 3.000 participantes de 45 países.<br>
+          <a class="src" target="_blank" rel="noopener" href="https://www.elcolombiano.com/tecnologia/robot-colombiano-de-segundo-en-la-robocup-2022-PF18489886">Fonte: El Colombiano (ago. 2022) ↗</a></li>
+        <li><b>Robôs que interagem com pessoas.</b> Segundo a Blu Radio, protótipos como Sinfonía e Ópera usam IA para reconhecer emoções, em pesquisas das universidades de los Andes, Magdalena e Santo Tomás.<br>
+          <a class="src" target="_blank" rel="noopener" href="https://www.bluradio.com/tecnologia/robots-que-detectan-emociones-y-sentimientos-ya-se-desarrollan-en-colombia">Fonte: Blu Radio ↗</a></li>
+      </ul></div>
+    </details>
+
+    <details class="card">
+      <summary><span class="ico">🏭</span> Automação na indústria</summary>
+      <div class="card-body"><ul>
+        <li><b>Robotika.</b> A Forbes Colômbia conta que Camilo Barrera fundou a empresa com o pai, depois de oito anos em uma multinacional de automação. A reportagem a descreve como uma das maiores fornecedoras de robôs para grandes indústrias do país.<br>
+          <a class="src" target="_blank" rel="noopener" href="https://forbes.co/2022/10/12/editors-picks/robots-a-la-colombiana">Fonte: Forbes Colômbia (out. 2022) ↗</a></li>
+      </ul>
+      <div class="note">Um cuidado com números: uma matéria de 2023 observa que não existe uma cifra concreta de quantos robôs industriais operam na Colômbia. Por isso este site não mostra estatísticas sobre isso.
+        <a class="src" target="_blank" rel="noopener" href="https://www.elespectador.com/contenido-patrocinado/preparese-para-el-noveno-magatorneo-de-robotica-runibot-2023/">Fonte: El Espectador (conteúdo patrocinado) ↗</a></div></div>
+    </details>
+
+    <details class="card">
+      <summary><span class="ico">🌱</span> Robótica no campo</summary>
+      <div class="card-body"><ul>
+        <li><b>Semillas del Futuro (Palmira, Valle del Cauca).</b> É o banco de sementes de feijão, mandioca e forrageiras tropicais da Alianza Bioversity International e CIAT, inaugurado em 2022. A reportagem diz que a tecnologia de IA do prédio inclui um veículo robótico tipo <i>rover</i>, desenvolvido pelo Proyecto Mineral de X.<br>
+          <a class="src" target="_blank" rel="noopener" href="https://www.contextoganadero.com/agricultura/colombia-inaugura-banco-de-semillas-para-la-conservacion-de-cultivos">Fonte: Contexto Ganadero ↗</a></li>
+        <li>O prédio também tem um laboratório de dados e biotecnologia que usa genômica, inteligência artificial e big data.<br>
+          <a class="src" target="_blank" rel="noopener" href="https://www.eltiempo.com/vida/ciencia/ciat-estrena-su-nuevo-banco-de-germoplasma-semillas-del-futuro-658088">Fonte: El Tiempo ↗</a></li>
+      </ul></div>
+    </details>
+
+    <details class="card">
+      <summary><span class="ico">🧩</span> Projetos educacionais</summary>
+      <div class="card-body"><ul>
+        <li><b>Colombia Robótica (MinCiencias).</b> O programa cria laboratórios STEAM em escolas, com robótica educativa, programação e IA. Em junho de 2026, o ministério informou 34 laboratórios já implementados, de 41 previstos. Professores recebem formação conduzida pela Universidad Nacional de Colombia.<br>
+          <a class="src" target="_blank" rel="noopener" href="https://minciencias.gov.co/sala_de_prensa/gobierno-nacional-reafirma-su-compromiso-con-el-pacifico-narinense-con-el-programa">Fonte: MinCiencias (jun. 2026) ↗</a> ·
+          <a class="src" target="_blank" rel="noopener" href="https://minciencias.gov.co/sala_de_prensa/en-medellin-se-fortalece-la-educacion-cientifica-con-un-nuevo-laboratorio-steam">MinCiencias (formação docente) ↗</a></li>
+        <li><b>Runibot.</b> É um torneio nacional de robótica universitária e escolar. Desde 2014 premia projetos de estudantes de 15 a 25 anos, com categorias como robô velocista e sumô.<br>
+          <a class="src" target="_blank" rel="noopener" href="https://www.elespectador.com/tecnologia/era-de-los-robots-universidades-colombianas-articulo-559529">Fonte: El Espectador ↗</a></li>
+      </ul></div>
+    </details>
+  </div>
+</section>
+
+<!-- ===================== INTELIGÊNCIA ARTIFICIAL ===================== -->
+<section class="sec" id="ia">
+  <div class="wrap">
+    <h2>Inteligência Artificial na Colômbia 🧠</h2>
+    <span class="tricolor"></span>
+    <p class="lead">Inteligência artificial (IA) é um conjunto de técnicas em que computadores aprendem padrões a partir de dados para reconhecer imagens, prever situações ou apoiar decisões.</p>
+
+    <!-- Passo a passo interativo: como uma IA aprende -->
+    <div class="steps" role="group" aria-label="Como a IA aprende">
+      <button class="step" data-s="0" aria-pressed="true">1. Dados</button>
+      <button class="step" data-s="1" aria-pressed="false">2. Treino</button>
+      <button class="step" data-s="2" aria-pressed="false">3. Previsão</button>
+      <button class="step" data-s="3" aria-pressed="false">4. Revisão humana</button>
+    </div>
+    <div class="stepText" id="stepText" aria-live="polite"></div>
+
+    <div class="ctx">
+      <div>
+        <h3>🏛️ Política nacional</h3>
+        <p style="margin-top:6px">O CONPES 4144, de 14 de fevereiro de 2025, formaliza a Política Nacional de IA, com seis eixos estratégicos, como governança e ética, infraestrutura de dados e uso da IA em entidades públicas e empresas. Ele substitui o enfoque do CONPES 3975, de 2019.</p>
+        <a class="src" target="_blank" rel="noopener" href="https://oecd.ai/en/dashboards/policy-initiatives/national-policy-on-artificial-intelligence-conpes-4144-3012">Fonte: OECD.AI ↗</a> ·
+        <a class="src" target="_blank" rel="noopener" href="https://www.cuatrecasas.com/es/latam/art/avances-politica-publica-inteligencia-artificial-colombia">Cuatrecasas ↗</a>
+      </div>
+      <div>
+        <h3>📊 Posição na região</h3>
+        <p style="margin-top:6px">No Índice Latino-Americano de IA (ILIA) 2025, da CEPAL e do CENIA, a Colômbia ficou em 4º lugar entre 19 países, subindo uma posição em relação ao ano anterior, segundo o MinTIC.</p>
+        <a class="src" target="_blank" rel="noopener" href="https://www.mintic.gov.co/portal/715/w3-article-416782.html">Fonte: MinTIC (out. 2025) ↗</a>
+      </div>
+    </div>
+
+    <h3 style="margin-top:34px">Onde a IA aparece</h3>
+    <div class="tabs" role="tablist" aria-label="Aplicações da IA">
+      <button class="tab" role="tab" id="t0" aria-controls="p0" aria-selected="true">🌾 Agricultura</button>
+      <button class="tab" role="tab" id="t1" aria-controls="p1" aria-selected="false" tabindex="-1">🩺 Saúde</button>
+      <button class="tab" role="tab" id="t2" aria-controls="p2" aria-selected="false" tabindex="-1">🚦 Trânsito</button>
+      <button class="tab" role="tab" id="t3" aria-controls="p3" aria-selected="false" tabindex="-1">📚 Educação</button>
+    </div>
+
+    <div class="tabpanel" role="tabpanel" id="p0" aria-labelledby="t0">
+      <h3>IA para analisar plantações</h3>
+      <p>Com muitos dados de clima, solo e manejo, a IA encontra padrões que ajudam a decidir o que plantar e como cuidar da lavoura.</p>
+      <div class="ex"><b>Exemplo real: milho em Córdoba.</b> O CIAT, o governo e a federação de produtores FENALCE construíram ferramentas de big data a partir de cerca de uma década de dados de fazendas. Na região, a produtividade do milho pode variar até 39% de um ano para outro por causa do clima. O estudo apontou o manejo como a principal causa de baixa produtividade.<br>
+        <a class="src" target="_blank" rel="noopener" href="https://alliancebioversityciat.org/stories/artificial-intelligence-and-farmer-knowledge-boost-smallholder-maize-yields">Fonte: Alianza Bioversity–CIAT (2019) ↗</a> ·
+        <a class="src" target="_blank" rel="noopener" href="https://www.sciencedaily.com/releases/2019/10/191015164654.htm">ScienceDaily ↗</a></div>
+    </div>
+    <div class="tabpanel" role="tabpanel" id="p1" aria-labelledby="t1" hidden>
+      <h3>IA para apoiar profissionais de saúde</h3>
+      <p>Algoritmos analisam grandes volumes de dados clínicos para apoiar diagnósticos e organizar recursos. A decisão final continua com a equipe médica.</p>
+      <div class="ex"><b>Exemplo 1: Unidade Clínica de IA.</b> A Fundación Cardioinfantil (LaCardio) criou a primeira unidade desse tipo no país, focada em doenças cardiovasculares. A instituição afirma que a IA não substitui médicos, e sim os potencializa.<br>
+        <a class="src" target="_blank" rel="noopener" href="https://www.elpais.com.co/colombia/se-inauguro-la-primera-unidad-clinica-de-inteligencia-artificial-en-colombia-1410.html">Fonte: El País Cali ↗</a></div>
+      <div class="ex"><b>Exemplo 2: Lab IAx.</b> A Universidad El Bosque (Bogotá), com AWS, BGH Tech Partner e Los Cobos Medical Center, apresentou o primeiro laboratório aberto de IA para a saúde do país. Entre os focos possíveis estão o diagnóstico precoce e o uso de recursos hospitalares.<br>
+        <a class="src" target="_blank" rel="noopener" href="https://www.elespectador.com/ciencia/presentan-el-primer-laboratorio-abierto-de-ia-para-la-salud-en-el-pais/">Fonte: El Espectador ↗</a></div>
+    </div>
+    <div class="tabpanel" role="tabpanel" id="p2" aria-labelledby="t2" hidden>
+      <h3>Sistemas inteligentes para analisar o trânsito</h3>
+      <p>Sensores contam veículos e um sistema ajusta o tempo dos semáforos conforme o fluxo, em vez de usar ciclos fixos.</p>
+      <div class="ex"><b>Exemplo real: Bogotá.</b> O Sistema de Semáforos Inteligente (SSI) começou com as primeiras 21 interseções em junho de 2019. A Secretaria de Movilidad previa instalar detectores veiculares para estimar o tráfego e otimizar os tempos de verde.<br>
+        <a class="src" target="_blank" rel="noopener" href="https://bogota.gov.co/mi-ciudad/movilidad/bogota-ya-cuenta-nuevos-semaforos-inteligentes">Fonte: Alcaldía de Bogotá ↗</a></div>
+      <div class="note">Esses sensores contam e regulam o tráfego. A própria Secretaria esclareceu que eles não registram multas.
+        <a class="src" target="_blank" rel="noopener" href="https://www.elespectador.com/bogota/secretaria-de-movilidad-desmiente-fake-news-sobre-semaforos-inteligentes-article-881823/">Fonte: El Espectador ↗</a></div>
+    </div>
+    <div class="tabpanel" role="tabpanel" id="p3" aria-labelledby="t3" hidden>
+      <h3>IA para apoiar o aprendizado</h3>
+      <p>A IA pode ser tema de estudo (aprender como ela funciona) e ferramenta de apoio para estudantes e professores.</p>
+      <div class="ex"><b>Exemplo real: Lei 2626 de 2026.</b> A Lei de Educação Digital, sancionada em 24 de agosto de 2026, atualiza a disciplina de Tecnologia e Informática na educação básica e média. Ela prevê incluir aos poucos pensamento computacional, programação, IA, ciência de dados e cidadania digital.<br>
+        <a class="src" target="_blank" rel="noopener" href="https://franciscofajardoabogados.com/colombia-da-un-paso-hacia-una-nueva-educacion-digital-inteligencia-artificial-y-programacion-llegan-a-las-aulas/">Fonte: Francisco Fajardo Abogados (set. 2026) ↗</a></div>
+      <div class="ex"><b>Na prática:</b> os laboratórios do Colombia Robótica oferecem formação em IA, programação e robótica a estudantes e professores.<br>
+        <a class="src" target="_blank" rel="noopener" href="https://www.minciencias.gov.co/node/9383">Fonte: MinCiencias (mai. 2026) ↗</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== JOGO: ROBÔ INTELIGENTE ===================== -->
+<section class="sec alt" id="jogo">
+  <div class="wrap">
+    <h2>Jogo: Robô Inteligente 🤖</h2>
+    <span class="tricolor"></span>
+    <p class="lead">Toque nos botões e o robô se move na hora. Leve-o até a bandeira 🏁, desviando dos blocos vermelhos, com o menor número de comandos.</p>
+
+    <div class="game" id="game">
+      <div class="gleft">
+        <div class="levels" role="group" aria-label="Nível de dificuldade">
+          <button class="lvl" data-l="0" aria-pressed="true">Fácil</button>
+          <button class="lvl" data-l="1" aria-pressed="false">Médio</button>
+          <button class="lvl" data-l="2" aria-pressed="false">Difícil</button>
+        </div>
+        <div class="board"><div class="grid" id="grid" aria-label="Mapa do jogo"></div></div>
+        <div class="msg" id="gmsg" role="status" aria-live="polite"></div>
+        <div class="dpad">
+          <button class="btn blue" id="cL" aria-label="Virar à esquerda"><b>↶</b>Esquerda</button>
+          <button class="btn yellow" id="cF" aria-label="Avançar"><b>▲</b>Avançar</button>
+          <button class="btn blue" id="cR" aria-label="Virar à direita"><b>↷</b>Direita</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>Placar</h3>
+        <div class="count"><span>Comandos: <b id="used">0</b></span></div>
+        <div class="hist" id="hist" aria-label="Histórico de comandos"></div>
+        <div class="actions">
+          <button class="btn ghost" id="undo">Desfazer</button>
+          <button class="btn ghost" id="reset">↺ Reiniciar</button>
+          <button class="btn yellow" id="tip">💡 Dica</button>
+        </div>
+        <button class="btn red" id="next" style="margin-top:10px;width:100%" hidden>Próximo nível ▶</button>
+        <div class="best" id="best"></div>
+        <div class="best">No computador, você também pode usar as setas do teclado: ↑ avança, ← e → viram.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== QUIZ ===================== -->
+<section class="sec" id="quiz">
+  <div class="wrap">
+    <h2>Quiz tecnológico 🎯</h2>
+    <span class="tricolor"></span>
+    <p class="lead">Dez perguntas sobre robótica e IA na Colômbia. Depois de cada resposta, você vê a explicação e a fonte.</p>
+    <div class="quiz" id="quizBox"></div>
+  </div>
+</section>
+
+<!-- ===================== CURIOSIDADES ===================== -->
+<section class="sec alt" id="curiosidades">
+  <div class="wrap">
+    <h2>Curiosidades 💡</h2>
+    <span class="tricolor"></span>
+    <p class="lead">Fatos verificáveis sobre universidades, pesquisa, empresas e projetos de IA. Cada card traz a fonte.</p>
+
+    <div class="filters" role="group" aria-label="Filtrar curiosidades">
+      <button class="fchip" data-f="todas" aria-pressed="true">Todas</button>
+      <button class="fchip" data-f="uni" aria-pressed="false">Universidades</button>
+      <button class="fchip" data-f="pesq" aria-pressed="false">Pesquisa</button>
+      <button class="fchip" data-f="emp" aria-pressed="false">Empresas</button>
+      <button class="fchip" data-f="ia" aria-pressed="false">Projetos de IA</button>
+    </div>
+
+    <div class="cur" id="cur">
+      <article class="fact" data-t="uni"><span class="tag">Universidades</span><h3>Um humanoide no campus</h3>
+        <p>O robô Aura, da Universidad de los Andes, mede 130 cm e pesa 35 kg. A reportagem destaca o seu modo de caminhar.</p>
+        <a class="src" target="_blank" rel="noopener" href="https://www.elespectador.com/ciencia/aura-el-primer-robot-humanoide-en-una-universidad-de-colombia/">Fonte: El Espectador ↗</a></article>
+      <article class="fact" data-t="uni"><span class="tag">Universidades</span><h3>Medalha de prata na RoboCup</h3>
+        <p>Seis estudantes e um instrutor da Universidad de los Andes foram a Bangkok em 2022 e voltaram com o segundo lugar.</p>
+        <a class="src" target="_blank" rel="noopener" href="https://www.elcolombiano.com/tecnologia/robot-colombiano-de-segundo-en-la-robocup-2022-PF18489886">Fonte: El Colombiano ↗</a></article>
+      <article class="fact" data-t="uni pesq"><span class="tag">Universidades · Pesquisa</span><h3>Robôs que reconhecem emoções</h3>
+        <p>Os protótipos Sinfonía, Ópera, Sónata, Lírica e Lied usam IA e vêm de pesquisas de três universidades, segundo a Blu Radio.</p>
+        <a class="src" target="_blank" rel="noopener" href="https://www.bluradio.com/tecnologia/robots-que-detectan-emociones-y-sentimientos-ya-se-desarrollan-en-colombia">Fonte: Blu Radio ↗</a></article>
+      <article class="fact" data-t="pesq"><span class="tag">Pesquisa</span><h3>Banco de sementes sustentável</h3>
+        <p>O Semillas del Futuro, em Palmira, guarda mais de 65 mil variedades de cultivos. A reportagem o apresenta como o primeiro banco de germoplasma do mundo com certificação LEED nível platina.</p>
+        <a class="src" target="_blank" rel="noopener" href="https://www.contextoganadero.com/agricultura/colombia-inaugura-banco-de-semillas-para-la-conservacion-de-cultivos">Fonte: Contexto Ganadero ↗</a></article>
+      <article class="fact" data-t="emp"><span class="tag">Empresas</span><h3>Robôs para a indústria</h3>
+        <p>A Robotika nasceu da experiência de Camilo Barrera, que estudou engenharia de automação na Universidad de La Salle e programou robôs em uma multinacional antes de abrir a empresa.</p>
+        <a class="src" target="_blank" rel="noopener" href="https://forbes.co/2022/10/12/editors-picks/robots-a-la-colombiana">Fonte: Forbes Colômbia ↗</a></article>
+      <article class="fact" data-t="uni"><span class="tag">Universidades</span><h3>Torneio de robótica desde 2014</h3>
+        <p>O Runibot reúne estudantes de 15 a 25 anos em categorias como velocista, sumô e robótica social. A edição de 2023 foi anunciada como a nona.</p>
+        <a class="src" target="_blank" rel="noopener" href="https://www.elespectador.com/tecnologia/era-de-los-robots-universidades-colombianas-articulo-559529">Fonte: El Espectador ↗</a></article>
+      <article class="fact" data-t="ia pesq"><span class="tag">Projetos de IA</span><h3>Primeiro laboratório aberto de IA para saúde</h3>
+        <p>O Lab IAx fica no HUB iEX em Saúde da Universidad El Bosque, em Bogotá, e foi apresentado em parceria com AWS, BGH Tech Partner e Los Cobos Medical Center.</p>
+        <a class="src" target="_blank" rel="noopener" href="https://www.elespectador.com/ciencia/presentan-el-primer-laboratorio-abierto-de-ia-para-la-salud-en-el-pais/">Fonte: El Espectador ↗</a></article>
+      <article class="fact" data-t="ia"><span class="tag">Projetos de IA</span><h3>Cinco países, 86% do uso de IA</h3>
+        <p>Segundo o MinTIC, a Colômbia está entre os cinco países da América Latina que concentram 86% do uso de soluções de IA na região.</p>
+        <a class="src" target="_blank" rel="noopener" href="https://www.mintic.gov.co/portal/715/w3-article-416782.html">Fonte: MinTIC ↗</a></article>
+      <article class="fact" data-t="ia"><span class="tag">Projetos de IA</span><h3>Laboratório de robótica na Guajira</h3>
+        <p>A Escuela Normal Superior Indígena de Uribia recebeu o Laboratório de Robótica nº 24 do Colombia Robótica, com robótica educativa, eletrônica maker, IA e impressão 3D.</p>
+        <a class="src" target="_blank" rel="noopener" href="https://dplnews.com/?p=295837">Fonte: DPL News / Prensa MinCiencias ↗</a></article>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FONTES ===================== -->
+<section class="sec" id="fontes">
+  <div class="wrap">
+    <h2>Fontes 📚</h2>
+    <span class="tricolor"></span>
+    <p class="lead">Todas as informações de exemplos reais vêm destes links, consultados em outubro de 2026. Projetos e números podem mudar com o tempo, então vale conferir a página original.</p>
+    <ol class="sources">
+      <li>OECD.AI, Política Nacional de IA (CONPES 4144): <a target="_blank" rel="noopener" href="https://oecd.ai/en/dashboards/policy-initiatives/national-policy-on-artificial-intelligence-conpes-4144-3012">oecd.ai</a></li>
+      <li>Cuatrecasas, avanços em política pública de IA na Colômbia: <a target="_blank" rel="noopener" href="https://www.cuatrecasas.com/es/latam/art/avances-politica-publica-inteligencia-artificial-colombia">cuatrecasas.com</a></li>
+      <li>MinTIC, Colômbia sobe ao 4º lugar no ILIA: <a target="_blank" rel="noopener" href="https://www.mintic.gov.co/portal/715/w3-article-416782.html">mintic.gov.co</a></li>
+      <li>Alianza Bioversity–CIAT, IA e conhecimento dos agricultores no milho: <a target="_blank" rel="noopener" href="https://alliancebioversityciat.org/stories/artificial-intelligence-and-farmer-knowledge-boost-smallholder-maize-yields">alliancebioversityciat.org</a></li>
+      <li>ScienceDaily, mesmo estudo do CIAT: <a target="_blank" rel="noopener" href="https://www.sciencedaily.com/releases/2019/10/191015164654.htm">sciencedaily.com</a></li>
+      <li>Contexto Ganadero, banco de sementes Semillas del Futuro: <a target="_blank" rel="noopener" href="https://www.contextoganadero.com/agricultura/colombia-inaugura-banco-de-semillas-para-la-conservacion-de-cultivos">contextoganadero.com</a></li>
+      <li>El Tiempo, Semillas del Futuro e laboratório de dados: <a target="_blank" rel="noopener" href="https://www.eltiempo.com/vida/ciencia/ciat-estrena-su-nuevo-banco-de-germoplasma-semillas-del-futuro-658088">eltiempo.com</a></li>
+      <li>El País Cali, Unidade Clínica de IA da Fundación Cardioinfantil: <a target="_blank" rel="noopener" href="https://www.elpais.com.co/colombia/se-inauguro-la-primera-unidad-clinica-de-inteligencia-artificial-en-colombia-1410.html">elpais.com.co</a></li>
+      <li>El Espectador, Lab IAx da Universidad El Bosque: <a target="_blank" rel="noopener" href="https://www.elespectador.com/ciencia/presentan-el-primer-laboratorio-abierto-de-ia-para-la-salud-en-el-pais/">elespectador.com</a></li>
+      <li>Alcaldía de Bogotá, semáforos inteligentes: <a target="_blank" rel="noopener" href="https://bogota.gov.co/mi-ciudad/movilidad/bogota-ya-cuenta-nuevos-semaforos-inteligentes">bogota.gov.co</a></li>
+      <li>El Espectador, Secretaria de Movilidad sobre os semáforos: <a target="_blank" rel="noopener" href="https://www.elespectador.com/bogota/secretaria-de-movilidad-desmiente-fake-news-sobre-semaforos-inteligentes-article-881823/">elespectador.com</a></li>
+      <li>Francisco Fajardo Abogados, Lei 2626 de 2026: <a target="_blank" rel="noopener" href="https://franciscofajardoabogados.com/colombia-da-un-paso-hacia-una-nueva-educacion-digital-inteligencia-artificial-y-programacion-llegan-a-las-aulas/">franciscofajardoabogados.com</a></li>
+      <li>MinCiencias, laboratórios Colombia Robótica (Pacífico Nariñense): <a target="_blank" rel="noopener" href="https://minciencias.gov.co/sala_de_prensa/gobierno-nacional-reafirma-su-compromiso-con-el-pacifico-narinense-con-el-programa">minciencias.gov.co</a></li>
+      <li>MinCiencias, formação docente em Medellín: <a target="_blank" rel="noopener" href="https://minciencias.gov.co/sala_de_prensa/en-medellin-se-fortalece-la-educacion-cientifica-con-un-nuevo-laboratorio-steam">minciencias.gov.co</a></li>
+      <li>MinCiencias, laboratório em Ciudad Bolívar: <a target="_blank" rel="noopener" href="https://www.minciencias.gov.co/node/9383">minciencias.gov.co</a></li>
+      <li>DPL News / MinCiencias, laboratório de Uribia: <a target="_blank" rel="noopener" href="https://dplnews.com/?p=295837">dplnews.com</a></li>
+      <li>El Espectador, Aura, humanoide da Universidad de los Andes: <a target="_blank" rel="noopener" href="https://www.elespectador.com/ciencia/aura-el-primer-robot-humanoide-en-una-universidad-de-colombia/">elespectador.com</a></li>
+      <li>El Colombiano, RoboCup 2022: <a target="_blank" rel="noopener" href="https://www.elcolombiano.com/tecnologia/robot-colombiano-de-segundo-en-la-robocup-2022-PF18489886">elcolombiano.com</a></li>
+      <li>Blu Radio, robôs que detectam emoções: <a target="_blank" rel="noopener" href="https://www.bluradio.com/tecnologia/robots-que-detectan-emociones-y-sentimientos-ya-se-desarrollan-en-colombia">bluradio.com</a></li>
+      <li>El Espectador, robôs nas universidades e o torneio Runibot: <a target="_blank" rel="noopener" href="https://www.elespectador.com/tecnologia/era-de-los-robots-universidades-colombianas-articulo-559529">elespectador.com</a></li>
+      <li>El Espectador (conteúdo patrocinado), Runibot 2023 e dados da indústria: <a target="_blank" rel="noopener" href="https://www.elespectador.com/contenido-patrocinado/preparese-para-el-noveno-magatorneo-de-robotica-runibot-2023/">elespectador.com</a></li>
+      <li>Forbes Colômbia, Robotika: <a target="_blank" rel="noopener" href="https://forbes.co/2022/10/12/editors-picks/robots-a-la-colombiana">forbes.co</a></li>
+    </ol>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><b>Colômbia Tech</b> é um projeto educativo independente, sem ligação oficial com os órgãos e empresas citados. Os exemplos reais foram resumidos a partir das fontes listadas. Se algo mudou, vale conferir a fonte original.</p>
+    <p><a href="#inicio">Voltar ao topo ↑</a></p>
+  </div>
+</footer>
+<noscript><p style="padding:16px;text-align:center">Ative o JavaScript para usar o jogo, o quiz e os filtros.</p></noscript>
+
+<script>
+(function () {
+  'use strict';
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+
+  /* =========================================================
+     1. NAVEGAÇÃO: destaca no menu a seção que está na tela
+     ========================================================= */
+  var navLinks = $$('.nav a');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          navLinks.forEach(function (l) { l.classList.toggle('on', l.getAttribute('href') === '#' + e.target.id); });
+        }
+      });
+    }, { rootMargin: '-45% 0px -50% 0px' });
+    navLinks.forEach(function (l) { var s = $(l.getAttribute('href')); if (s) io.observe(s); });
+  }
+
+  /* =========================================================
+     2. IA: passo a passo "Como a IA aprende"
+     ========================================================= */
+  var STEPS = [
+    'Dados: a IA começa com muitos exemplos, como fotos de plantações, registros de tráfego ou exames. Quanto mais variados e bem organizados, melhor.',
+    'Treino: um programa compara os exemplos, procura padrões e ajusta seus cálculos até errar menos.',
+    'Previsão: com o padrão aprendido, a IA responde a casos novos, por exemplo indicando que uma folha parece doente ou que uma via vai congestionar.',
+    'Revisão humana: pessoas conferem os resultados, corrigem erros e decidem o que fazer. A IA apoia, mas a responsabilidade é de quem usa.'
+  ];
+  var stepBtns = $$('.step');
+  function showStep(i) {
+    stepBtns.forEach(function (b, k) { b.setAttribute('aria-pressed', k === i ? 'true' : 'false'); });
+    $('#stepText').textContent = STEPS[i];
+  }
+  stepBtns.forEach(function (b) { b.addEventListener('click', function () { showStep(+b.dataset.s); }); });
+  showStep(0);
+
+  /* =========================================================
+     3. IA: abas de aplicações (com setas do teclado)
+     ========================================================= */
+  var tabs = $$('.tab');
+  function selectTab(btn) {
+    tabs.forEach(function (t) {
+      var on = t === btn;
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+      t.tabIndex = on ? 0 : -1;
+      $('#' + t.getAttribute('aria-controls')).hidden = !on;
+    });
+  }
+  tabs.forEach(function (t, i) {
+    t.addEventListener('click', function () { selectTab(t); });
+    t.addEventListener('keydown', function (e) {
+      var k = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (!k) return;
+      var n = tabs[(i + k + tabs.length) % tabs.length];
+      selectTab(n); n.focus(); e.preventDefault();
+    });
+  });
+
+  /* =========================================================
+     4. JOGO: ROBÔ INTELIGENTE (controle ao vivo)
+     Cada toque num botão já move o robô na hora.
+     Mapas: S = início, G = destino, # = obstáculo, . = livre.
+     Direções: 0 = cima, 1 = direita, 2 = baixo, 3 = esquerda.
+     ========================================================= */
+  var LEVELS = [
+    { name: 'Fácil', dir: 1, map: ['S..#.', '...#.', '.#...', '.....', '....G'] },
+    { name: 'Médio', dir: 1, map: ['S...#.', '.#..#.', '.#....', '...##.', '#.....', '..#..G'] },
+    { name: 'Difícil', dir: 1, map: ['S....#.', '##.#.#.', '...#...', '.#.###.', '.#.....', '...###.', '#.....G'] }
+  ];
+  var DIRS = [[0, -1], [1, 0], [0, 1], [-1, 0]];
+  var ICONS = { F: '▲', L: '↶', R: '↷' };
+  var gridEl = $('#grid'), gmsg = $('#gmsg'), usedEl = $('#used'), histEl = $('#hist');
+  var lvlIdx = 0, N = 5, walls = [], start = null, goal = null;
+  var rx = 0, ry = 0, rd = 1, angle = 90, count = 0, hist = [], done = false, robotEl = null;
+
+  // Recordes por nível (localStorage pode falhar, por isso o try/catch)
+  var BEST_KEY = 'colombia-tech-best-v2';
+  function loadBest() { try { return JSON.parse(localStorage.getItem(BEST_KEY)) || {}; } catch (e) { return {}; } }
+  function saveBest(o) { try { localStorage.setItem(BEST_KEY, JSON.stringify(o)); } catch (e) { /* sem armazenamento */ } }
+
+  function parseLevel(i) {
+    var rows = LEVELS[i].map;
+    N = rows.length; walls = [];
+    for (var y = 0; y < N; y++) {
+      walls[y] = [];
+      for (var x = 0; x < N; x++) {
+        var ch = rows[y][x];
+        walls[y][x] = ch === '#';
+        if (ch === 'S') start = { x: x, y: y };
+        if (ch === 'G') goal = { x: x, y: y };
+      }
+    }
+  }
+
+  // Busca em largura: menor caminho até a bandeira a partir de uma posição e direção.
+  // Devolve o total de comandos e o primeiro comando (usado na dica e na pontuação).
+  function solve(x, y, d) {
+    var seen = {}, q = [{ x: x, y: y, d: d, n: 0, f: null }];
+    seen[x + ',' + y + ',' + d] = 1;
+    while (q.length) {
+      var s = q.shift();
+      if (s.x === goal.x && s.y === goal.y) return { n: s.n, f: s.f };
+      var nx = s.x + DIRS[s.d][0], ny = s.y + DIRS[s.d][1], nexts = [];
+      if (nx >= 0 && ny >= 0 && nx < N && ny < N && !walls[ny][nx]) nexts.push({ c: 'F', x: nx, y: ny, d: s.d });
+      nexts.push({ c: 'R', x: s.x, y: s.y, d: (s.d + 1) % 4 }, { c: 'L', x: s.x, y: s.y, d: (s.d + 3) % 4 });
+      for (var k = 0; k < nexts.length; k++) {
+        var t = nexts[k], key = t.x + ',' + t.y + ',' + t.d;
+        if (!seen[key]) { seen[key] = 1; q.push({ x: t.x, y: t.y, d: t.d, n: s.n + 1, f: s.f || t.c }); }
+      }
+    }
+    return null;
+  }
+
+  var ROBOT_SVG =
+    '<svg viewBox="3 -1 34 39" aria-hidden="true">' +
+    '<polygon points="20,0 28,9 12,9" fill="#CE1126"/>' +
+    '<rect x="6" y="8" width="28" height="29" rx="9" fill="#FCD116" stroke="#0d1b3d" stroke-width="2.5"/>' +
+    '<rect x="10" y="13" width="20" height="10" rx="5" fill="#0b1a44"/>' +
+    '<circle cx="16" cy="18" r="2.4" fill="#7fb4ff"/><circle cx="24" cy="18" r="2.4" fill="#7fb4ff"/>' +
+    '<rect x="9" y="27" width="22" height="3.5" rx="1.5" fill="#003893"/><rect x="9" y="31" width="22" height="3.5" rx="1.5" fill="#CE1126"/></svg>';
+
+  function buildGrid() {
+    gridEl.style.setProperty('--n', N);
+    gridEl.innerHTML = '';
+    for (var y = 0; y < N; y++) {
+      for (var x = 0; x < N; x++) {
+        var c = document.createElement('div');
+        c.className = 'cell' + ((x + y) % 2 ? ' alt' : '') + (walls[y][x] ? ' wall' : '') +
+          (x === goal.x && y === goal.y ? ' goal' : '') + (x === start.x && y === start.y ? ' start' : '');
+        gridEl.appendChild(c);
+      }
+    }
+    robotEl = document.createElement('div');
+    robotEl.className = 'robot';
+    robotEl.innerHTML = ROBOT_SVG;
+    gridEl.appendChild(robotEl);
+  }
+
+  // Posição em porcentagem do mapa, então funciona em qualquer tamanho de tela
+  function placeRobot() {
+    robotEl.style.width = robotEl.style.height = (100 / N) + '%';
+    robotEl.style.left = (rx * 100 / N) + '%';
+    robotEl.style.top = (ry * 100 / N) + '%';
+    robotEl.firstElementChild.style.transform = 'rotate(' + angle + 'deg)';
+  }
+
+  function say(text, kind) { gmsg.className = 'msg' + (kind ? ' ' + kind : ''); gmsg.textContent = text; }
+
+  function renderHist() {
+    histEl.innerHTML = '';
+    var from = Math.max(0, hist.length - 30);
+    if (from > 0) { var more = document.createElement('span'); more.className = 'chip'; more.style.background = 'var(--muted)'; more.textContent = '…'; histEl.appendChild(more); }
+    for (var i = from; i < hist.length; i++) {
+      var s = document.createElement('span');
+      s.className = 'chip ' + hist[i].c; s.textContent = ICONS[hist[i].c];
+      histEl.appendChild(s);
+    }
+    usedEl.textContent = count;
+  }
+
+  function lockButtons() { ['cF', 'cL', 'cR'].forEach(function (id) { $('#' + id).disabled = done; }); }
+  function showBest() {
+    var b = loadBest()[lvlIdx];
+    $('#best').textContent = b ? 'Seu melhor neste nível: ' + b + ' comandos.' : 'Ainda sem recorde neste nível.';
+  }
+  function bump() { robotEl.classList.remove('bump'); void robotEl.offsetWidth; robotEl.classList.add('bump'); }
+
+  // Executa UM comando imediatamente (F = avançar, L = esquerda, R = direita)
+  function command(c) {
+    if (done) return;
+    var before = { x: rx, y: ry, d: rd, a: angle, c: c };
+    if (c === 'L') { rd = (rd + 3) % 4; angle -= 90; }
+    else if (c === 'R') { rd = (rd + 1) % 4; angle += 90; }
+    else {
+      var nx = rx + DIRS[rd][0], ny = ry + DIRS[rd][1];
+      if (nx < 0 || ny < 0 || nx >= N || ny >= N) { bump(); say('Você está na borda do mapa. Vire para outro lado!', 'err'); return; }
+      if (walls[ny][nx]) { bump(); say('Tem um bloco vermelho na frente! Vire para contornar.', 'err'); return; }
+      rx = nx; ry = ny;
+    }
+    hist.push(before); count++;
+    placeRobot(); renderHist();
+    if (rx === goal.x && ry === goal.y) { win(); return; }
+    say('Boa! Continue até a bandeira 🏁.', '');
+  }
+
+  function win() {
+    done = true; lockButtons();
+    var opt = solve(start.x, start.y, LEVELS[lvlIdx].dir).n;
+    var stars = count === opt ? '⭐⭐⭐' : (count <= opt + 3 ? '⭐⭐' : '⭐');
+    var best = loadBest();
+    if (!best[lvlIdx] || count < best[lvlIdx]) { best[lvlIdx] = count; saveBest(best); }
+    showBest();
+    say('🎉 Chegou! ' + stars + ' Você usou ' + count + ' comandos. ' +
+      (count === opt ? 'Perfeito: esse é o menor caminho possível!' : 'O menor caminho possível usa ' + opt + '. Tente bater isso!'), 'ok');
+    var last = lvlIdx >= LEVELS.length - 1;
+    $('#next').hidden = last;
+    if (last) say(gmsg.textContent + ' 🏆 Você completou todos os níveis!', 'ok');
+  }
+
+  function undo() {
+    if (!hist.length) return;
+    var b = hist.pop();
+    rx = b.x; ry = b.y; rd = b.d; angle = b.a; count--;
+    done = false; lockButtons(); $('#next').hidden = true;
+    placeRobot(); renderHist(); say('Comando desfeito.', 'tip');
+  }
+
+  function tip() {
+    if (done) { say('Você já chegou! Tente o próximo nível.', 'tip'); return; }
+    var s = solve(rx, ry, rd);
+    if (!s) { say('Sem caminho daqui. Toque em Reiniciar.', 'err'); return; }
+    var what = s.f === 'F' ? 'avançar' : s.f === 'L' ? 'virar à esquerda' : 'virar à direita';
+    say('💡 Dica: o próximo passo é ' + what + '. Daqui faltam pelo menos ' + s.n + ' comandos.', 'tip');
+  }
+
+  function resetGame(silent) {
+    rx = start.x; ry = start.y; rd = LEVELS[lvlIdx].dir; angle = rd * 90;
+    count = 0; hist = []; done = false;
+    lockButtons(); $('#next').hidden = true; placeRobot(); renderHist();
+    if (!silent) say('Jogo reiniciado. Boa sorte!', '');
+  }
+
+  function loadLevel(i) {
+    lvlIdx = i; parseLevel(i);
+    // Mapas maiores ganham um tabuleiro maior para o robô continuar fácil de ver
+    $('#game').style.setProperty('--bw', ({ 5: 300, 6: 330, 7: 380 }[N] || 320) + 'px');
+    buildGrid(); resetGame(true); showBest();
+    $$('.lvl').forEach(function (b) { b.setAttribute('aria-pressed', +b.dataset.l === i ? 'true' : 'false'); });
+    say('Nível ' + LEVELS[i].name + '. O robô começa virado para a direita. Toque ▲ para avançar ou ↶ ↷ para virar.', '');
+  }
+
+  $('#cF').addEventListener('click', function () { command('F'); });
+  $('#cL').addEventListener('click', function () { command('L'); });
+  $('#cR').addEventListener('click', function () { command('R'); });
+  $('#undo').addEventListener('click', undo);
+  $('#reset').addEventListener('click', function () { resetGame(false); });
+  $('#tip').addEventListener('click', tip);
+  $('#next').addEventListener('click', function () { if (lvlIdx + 1 < LEVELS.length) loadLevel(lvlIdx + 1); });
+  $$('.lvl').forEach(function (b) { b.addEventListener('click', function () { loadLevel(+b.dataset.l); }); });
+  // Teclado: setas controlam o robô quando o foco está dentro da área do jogo
+  $('#game').addEventListener('keydown', function (e) {
+    var m = { ArrowUp: 'F', ArrowLeft: 'L', ArrowRight: 'R' }[e.key];
+    if (m) { e.preventDefault(); command(m); }
+  });
+  loadLevel(0);
+
+  /* =========================================================
+     5. QUIZ: 10 perguntas, 4 alternativas, explicação e pontuação
+     "a" é o índice da resposta certa na lista original.
+     ========================================================= */
+  var QUESTIONS = [
+    { q: 'Qual área junta mecânica, eletrônica e programação para criar robôs?',
+      o: ['Robótica', 'Astronomia', 'Geologia', 'Cartografia'], a: 0,
+      e: 'Robótica combina estruturas mecânicas, circuitos eletrônicos e programas para que máquinas sintam o ambiente, decidam e ajam.' },
+    { q: 'Qual documento define a Política Nacional de IA da Colômbia, aprovado em fevereiro de 2025?',
+      o: ['CONPES 4144', 'CONPES 3975', 'Lei 2626 de 2026', 'Plano Nacional de Desenvolvimento 2022–2026'], a: 0,
+      e: 'O CONPES 4144, de 14 de fevereiro de 2025, formaliza a política de IA. O CONPES 3975, de 2019, já tratava de transformação digital e IA.',
+      s: ['OECD.AI', 'https://oecd.ai/en/dashboards/policy-initiatives/national-policy-on-artificial-intelligence-conpes-4144-3012'] },
+    { q: 'Em que posição a Colômbia ficou no Índice Latino-Americano de IA (ILIA) 2025, entre 19 países?',
+      o: ['1º lugar', '2º lugar', '4º lugar', '9º lugar'], a: 2,
+      e: 'A Colômbia ficou em 4º lugar, subindo uma posição em relação ao ano anterior, segundo o MinTIC.',
+      s: ['MinTIC', 'https://www.mintic.gov.co/portal/715/w3-article-416782.html'] },
+    { q: 'Em qual cidade fica o banco de sementes Semillas del Futuro?',
+      o: ['Palmira (Valle del Cauca)', 'Medellín', 'Cartagena', 'Bucaramanga'], a: 0,
+      e: 'O banco fica em Palmira, no Valle del Cauca, e é administrado pela Alianza Bioversity International e CIAT.',
+      s: ['Contexto Ganadero', 'https://www.contextoganadero.com/agricultura/colombia-inaugura-banco-de-semillas-para-la-conservacion-de-cultivos'] },
+    { q: 'Qual universidade colombiana apresentou o robô humanoide Aura em 2025?',
+      o: ['Universidad Nacional de Colombia', 'Universidad de los Andes', 'EAFIT', 'Universidad del Norte'], a: 1,
+      e: 'O Aura, de 130 cm e 35 kg, foi apresentado na Universidad de los Andes, em Bogotá.',
+      s: ['El Espectador', 'https://www.elespectador.com/ciencia/aura-el-primer-robot-humanoide-en-una-universidad-de-colombia/'] },
+    { q: 'Qual programa do MinCiencias leva laboratórios STEAM de robótica a escolas do país?',
+      o: ['Misión TIC', 'Colombia Robótica', 'Computadores para Educar', 'Ser Pilo Paga'], a: 1,
+      e: 'O Colombia Robótica implanta laboratórios STEAM com robótica educativa, programação e IA. Em junho de 2026, 34 de 41 laboratórios previstos estavam implementados.',
+      s: ['MinCiencias', 'https://minciencias.gov.co/sala_de_prensa/gobierno-nacional-reafirma-su-compromiso-con-el-pacifico-narinense-con-el-programa'] },
+    { q: 'A Lei 2626 de 2026 prevê incluir quais temas na educação básica e média?',
+      o: ['Pensamento computacional, programação, IA, ciência de dados e cidadania digital', 'Apenas digitação', 'Somente manutenção de computadores', 'Somente jogos eletrônicos'], a: 0,
+      e: 'A Lei de Educação Digital, sancionada em 24 de agosto de 2026, atualiza Tecnologia e Informática e prevê incluir esses temas aos poucos.',
+      s: ['Francisco Fajardo Abogados', 'https://franciscofajardoabogados.com/colombia-da-un-paso-hacia-una-nueva-educacion-digital-inteligencia-artificial-y-programacion-llegan-a-las-aulas/'] },
+    { q: 'No projeto do CIAT com a FENALCE em Córdoba, os dados das fazendas ajudaram produtores de qual cultura?',
+      o: ['Café', 'Milho', 'Banana', 'Cana-de-açúcar'], a: 1,
+      e: 'Foram ferramentas de big data para o milho, cuja produtividade na região pode variar até 39% de um ano para outro por causa do clima.',
+      s: ['Alianza Bioversity–CIAT', 'https://alliancebioversityciat.org/stories/artificial-intelligence-and-farmer-knowledge-boost-smallholder-maize-yields'] },
+    { q: 'Para que servem os detectores veiculares do sistema de semáforos inteligentes de Bogotá?',
+      o: ['Multar motoristas automaticamente', 'Estimar o tráfego para otimizar os tempos de verde', 'Medir a poluição do ar', 'Cobrar pedágio'], a: 1,
+      e: 'Eles ajudam o sistema a estimar o tráfego e ajustar os tempos de verde. A Secretaria de Movilidad esclareceu que esses sensores não registram multas.',
+      s: ['Alcaldía de Bogotá', 'https://bogota.gov.co/mi-ciudad/movilidad/bogota-ya-cuenta-nuevos-semaforos-inteligentes'] },
+    { q: 'A Unidade Clínica de IA da Fundación Cardioinfantil (LaCardio) busca melhorar o diagnóstico e o tratamento de qual tipo de doença?',
+      o: ['Doenças da pele', 'Doenças cardiovasculares', 'Doenças dentárias', 'Doenças ósseas'], a: 1,
+      e: 'A unidade, apresentada como a primeira do tipo no país, foca em doenças cardiovasculares. A instituição diz que a IA potencializa os médicos, sem substituí-los.',
+      s: ['El País Cali', 'https://www.elpais.com.co/colombia/se-inauguro-la-primera-unidad-clinica-de-inteligencia-artificial-en-colombia-1410.html'] }
+  ];
+
+  var quizBox = $('#quizBox');
+  var order = [], qi = 0, score = 0, cur = null;
+
+  function shuffle(a) { // embaralhamento de Fisher-Yates
+    for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; }
+    return a;
+  }
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
+
+  function startQuiz() {
+    order = shuffle(QUESTIONS.map(function (_, i) { return i; }));
+    qi = 0; score = 0; showQuestion();
+  }
+
+  function showQuestion() {
+    var Q = QUESTIONS[order[qi]];
+    // embaralha as alternativas e guarda a posição da certa
+    var idxs = shuffle([0, 1, 2, 3]);
+    cur = { opts: idxs.map(function (k) { return Q.o[k]; }), right: idxs.indexOf(Q.a), Q: Q, done: false };
+
+    quizBox.innerHTML = '';
+    var top = el('div', 'qtop');
+    top.appendChild(el('span', '', 'Pergunta ' + (qi + 1) + ' de ' + QUESTIONS.length));
+    top.appendChild(el('span', '', 'Acertos: ' + score));
+    var bar = el('div', 'bar'); var fill = el('i'); fill.style.width = (qi / QUESTIONS.length * 100) + '%'; bar.appendChild(fill);
+    quizBox.appendChild(top); quizBox.appendChild(bar);
+    quizBox.appendChild(el('h3', '', Q.q));
+
+    var wrap = el('div', 'opts'); var btns = [];
+    cur.opts.forEach(function (txt, k) {
+      var b = el('button', 'opt'); b.type = 'button';
+      b.appendChild(el('span', 'L', 'ABCD'[k])); b.appendChild(el('span', '', txt));
+      b.addEventListener('click', function () { answer(k, btns); });
+      btns.push(b); wrap.appendChild(b);
+    });
+    quizBox.appendChild(wrap);
+    var ex = el('div', 'explain'); ex.hidden = true; ex.id = 'qex'; quizBox.appendChild(ex);
+    var act = el('div', 'qactions'); act.id = 'qact'; quizBox.appendChild(act);
+  }
+
+  function answer(k, btns) {
+    if (cur.done) return; cur.done = true;
+    var ok = k === cur.right;
+    if (ok) score++;
+    btns.forEach(function (b, i) {
+      b.disabled = true;
+      if (i === cur.right) b.classList.add('right');
+      else if (i === k) b.classList.add('wrong');
+    });
+    var ex = $('#qex'); ex.hidden = false; ex.innerHTML = '';
+    ex.appendChild(el('b', '', ok ? '✅ Correto! ' : '❌ Não foi dessa vez. '));
+    ex.appendChild(document.createTextNode(cur.Q.e + ' '));
+    if (cur.Q.s) {
+      var a = el('a', 'src', 'Fonte: ' + cur.Q.s[0] + ' ↗'); a.href = cur.Q.s[1]; a.target = '_blank'; a.rel = 'noopener';
+      ex.appendChild(a);
+    }
+    var next = el('button', 'btn blue', qi === QUESTIONS.length - 1 ? 'Ver resultado' : 'Próxima pergunta ▶');
+    next.type = 'button';
+    next.addEventListener('click', function () { qi++; if (qi >= QUESTIONS.length) showResult(); else showQuestion(); });
+    $('#qact').appendChild(next); next.focus();
+  }
+
+  function showResult() {
+    quizBox.innerHTML = '';
+    var r = el('div', 'result');
+    r.appendChild(el('div', '', score >= 9 ? '🏆' : score >= 6 ? '🤖' : '🌱'));
+    r.appendChild(el('div', 'big', score + ' / ' + QUESTIONS.length));
+    r.appendChild(el('p', '', 'Você acertou ' + score + (score === 1 ? ' pergunta' : ' perguntas') + ' de ' + QUESTIONS.length + '.'));
+    r.appendChild(el('p', '', score >= 9 ? 'Incrível! Você já é especialista em tecnologia colombiana.' :
+      score >= 6 ? 'Muito bem! Releia as seções e tente acertar todas.' : 'Bom começo! Explore as seções acima e jogue de novo.'));
+    var again = el('button', 'btn red', '↺ Jogar novamente'); again.type = 'button';
+    again.addEventListener('click', startQuiz);
+    r.appendChild(again);
+    quizBox.appendChild(r);
+  }
+  startQuiz();
+
+  /* =========================================================
+     6. CURIOSIDADES: filtros por categoria
+     ========================================================= */
+  var chips = $$('.fchip'), facts = $$('.fact');
+  chips.forEach(function (c) {
+    c.addEventListener('click', function () {
+      chips.forEach(function (x) { x.setAttribute('aria-pressed', x === c ? 'true' : 'false'); });
+      var f = c.dataset.f;
+      facts.forEach(function (card) { card.hidden = !(f === 'todas' || card.dataset.t.split(' ').indexOf(f) > -1); });
+    });
+  });
+})();
+</script>
+</body>
+</html>
